@@ -2,7 +2,7 @@ require('./app/init');
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const port = process.env.port || 3000;
+const port = process.env.PORT || 3000;
 
 const users = require("./app/database/users");
 
