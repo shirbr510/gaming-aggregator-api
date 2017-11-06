@@ -1,0 +1,53 @@
+{
+  "name": "gaming-aggregator-api",
+  "version": "1.0.0",
+  "description": "an api for aggregated gaming data",
+  "main": "index.js",
+  "scripts": {
+    "coverage": "npm run coverage:report-coveralls & npm run coverage:report-codacy",
+    "coverage:report-codacy": "node node_modules/.bin/jest --coverage && cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage",
+    "coverage:report-coveralls": "node node_modules/.bin/jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "test": "jest",
+    "test:watch": "jest --watchAll",
+    "flow": "flow"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shirbr510/gaming-aggregator-api.git"
+  },
+  "author": "Shir Brass",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shirbr510/gaming-aggregator-api/issues"
+  },
+  "homepage": "https://github.com/shirbr510/gaming-aggregator-api#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.0.1",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-flow": "^6.23.0",
+    "codacy-coverage": "^2.0.3",
+    "coveralls": "^3.0.0",
+    "eslint": "^4.10.0",
+    "eslint-config-google": "^0.9.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-babel": "^4.1.2",
+    "eslint-plugin-flowtype": "^2.39.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jest": "^21.2.0",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "flow-bin": "^0.57.3",
+    "jest": "^21.2.1"
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "functions": 70,
+        "lines": 70,
+        "statements": 70
+      }
+    }
+  }
+}
