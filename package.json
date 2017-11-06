@@ -7,6 +7,7 @@
     "coverage": "npm run coverage:report-coveralls & npm run coverage:report-codacy",
     "coverage:report-codacy": "node node_modules/.bin/jest --coverage && cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage",
     "coverage:report-coveralls": "node node_modules/.bin/jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "start": "node index.js",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "flow": "flow"
@@ -49,5 +50,13 @@
         "statements": 70
       }
     }
+  },
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0"
   }
 }
