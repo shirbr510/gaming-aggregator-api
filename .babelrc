@@ -1,0 +1,6 @@
+{
+  "presets": ["env","flow"],
+  "ignore": [
+    "node_modules"
+  ]
+}
