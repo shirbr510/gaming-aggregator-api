@@ -12,9 +12,25 @@ app.get('/', (request, response) => {
     response.send('Hello from Express!')
 });
 
-app.post('/', (request, response) => {
-    users.createUser(1,'dummy','dummy@dummy.com');
-    response.send('User Created!')
+app.post('/users', (request, response) => {
+    const {username,email,password} = request.body;
+    users.createUser(username,email,password)
+        .then(()=>response.send('User Created!'))
+        .catch(()=>response.send('Something went wrong!'));
+
+});
+
+app.get('/users', (request, response) => {
+    users.get().then(users=>{
+        response.send(users);
+    });
+});
+
+app.get('/users/:id', (request, response) => {
+    const {id} = request.params;
+    users.getUser(id).then(user=>{
+        response.send(user);
+    });
 });
 
 app.use((err, request, response, next) => {

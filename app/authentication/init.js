@@ -21,7 +21,7 @@ passport.use(new LocalStrategy(
             }
 
             // Always use hashed passwords and fixed time comparison
-            bcrypt.compare(password, user.passwordHash, (err, isValid) => {
+            bcrypt.compare(password, user.password, (err, isValid) => {
                 if (err) {
                     return done(err)
                 }
