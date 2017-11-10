@@ -1,6 +1,7 @@
 // @flow
 
 import * as firebase from 'firebase'
+import * as _ from 'lodash';
 import bcrypt from "bcrypt";
 
 const saltRounds = 10;
@@ -27,4 +28,10 @@ export function get() {
 
 export function getUser(userId) {
     return database.ref(`${COLLECTION_BASE_ROUTE}/${userId}`).once('value').then(snapshot=>snapshot.val());
+}
+
+export function getUserByEmail(email: string) {
+    return database.ref(`${COLLECTION_BASE_ROUTE}`).orderByChild("email").equalTo(email).once('value').then(snapshot=>snapshot.val()).then(users=>{
+        return !_.isEmpty(users) ? users[0] : users;
+    });
 }

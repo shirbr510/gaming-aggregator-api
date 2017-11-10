@@ -1,3 +1,7 @@
+// @flow
+
+import {getUserByEmail} from "../database/users";
+
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 const LocalStrategy = require('passport-local').Strategy;
@@ -10,11 +14,7 @@ const user = {
 
 passport.use(new LocalStrategy(
     (username, password, done) => {
-        findUser(username, (err, user) => {
-            if (err) {
-                return done(err)
-            }
-
+        getUserByEmail(email).then(user=> {
             // User not found
             if (!user) {
                 return done(null, false)
@@ -31,5 +31,6 @@ passport.use(new LocalStrategy(
                 return done(null, user)
             })
         })
+            .catch(err=>done(err))
     }
 ));
