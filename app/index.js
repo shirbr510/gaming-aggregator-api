@@ -1,5 +1,5 @@
-const express = require('express');
-const passport = require('passport');
+import express from "express";
+import passport from "passport";
 //const session = require('express-session');
 // const RedisStore = require('connect-redis')(session);
 

@@ -7,7 +7,7 @@
     "coverage": "npm run coverage:report-coveralls & npm run coverage:report-codacy",
     "coverage:report-codacy": "node node_modules/.bin/jest --coverage && cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage",
     "coverage:report-coveralls": "node node_modules/.bin/jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "start": "node index.js",
+    "start": "babel-node index.js",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "flow": "flow"

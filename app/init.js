@@ -1,7 +1,7 @@
 //init dotenv
 require('dotenv').config();
 
-const firebase = require("firebase");
+import * as firebase from 'firebase'
 
 // Initialize Firebase
 const config = {
