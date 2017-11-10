@@ -1,3 +1,5 @@
+// @flow
+
 import * as firebase from 'firebase'
 
 firebase.auth().signInAnonymously().catch(function(error) {

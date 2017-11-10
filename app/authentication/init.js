@@ -6,18 +6,14 @@ const passport = require('passport');
 const bcrypt = require('bcrypt');
 const LocalStrategy = require('passport-local').Strategy;
 
-const user = {
-    username: 'test-user',
-    passwordHash: 'bcrypt-hashed-password',
-    id: 1
-};
-
-passport.use(new LocalStrategy(
-    (username, password, done) => {
+passport.use(new LocalStrategy({
+        usernameField: 'email',
+        passwordField: 'password'
+    },(email, password, done) => {
         getUserByEmail(email).then(user=> {
             // User not found
             if (!user) {
-                return done(null, false)
+                return done(null, false, { message: 'Incorrect email.' });
             }
 
             // Always use hashed passwords and fixed time comparison
@@ -26,7 +22,7 @@ passport.use(new LocalStrategy(
                     return done(err)
                 }
                 if (!isValid) {
-                    return done(null, false)
+                    return done(null, false, { message: 'Incorrect password.' });
                 }
                 return done(null, user)
             })

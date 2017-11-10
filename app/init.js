@@ -11,4 +11,5 @@ const config = {
 };
 firebase.initializeApp(config);
 
+require('./authentication/init');
 require('./database/init');
