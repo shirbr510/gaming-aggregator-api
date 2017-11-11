@@ -1,15 +1,19 @@
-//init dotenv
-require('dotenv').config();
+// @flow
 
-import * as firebase from 'firebase'
-
-// Initialize Firebase
-const config = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    databaseURL: process.env.FIREBASE_DB_ENDPOINT,
-};
-firebase.initializeApp(config);
-
-require('./authentication/init');
+require('../config/init');
 require('./database/init');
+require('./authentication/init');
+
+import express from "express";
+import passport from "passport";
+import session from "express-session";
+
+const app = express();
+app.use(session({
+    secret: 'this is my secret',
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+

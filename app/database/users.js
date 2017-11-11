@@ -30,8 +30,9 @@ export function getUser(userId) {
     return database.ref(`${COLLECTION_BASE_ROUTE}/${userId}`).once('value').then(snapshot=>snapshot.val());
 }
 
-export function getUserByEmail(email: string) {
-    return database.ref(`${COLLECTION_BASE_ROUTE}`).orderByChild("email").equalTo(email).once('value').then(snapshot=>snapshot.val()).then(users=>{
-        return !_.isEmpty(users) ? users[0] : users;
-    });
+export async function getUserByEmail(email: string) {
+    const userswithSpecificEmailRef = database.ref(`${COLLECTION_BASE_ROUTE}`).orderByChild("email").equalTo(email).limitToFirst(1);
+    const users = await userswithSpecificEmailRef.once('value').then(snapshot => snapshot.val());
+    const usersArray = _.map(Object.keys(users), key => users[key]);
+    return usersArray.length > 0 ? _.first(usersArray) : {};
 }
