@@ -6,11 +6,14 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 import errorHandler from "./app/middlewares/errorHandler";
 import "./app/init";
+import {usePassportMiddleware} from './app/authentication/middleware';
 import routes from './app/routes';
 
 
 app.use(cookieParser());
 app.use(bodyParser.json());
+
+usePassportMiddleware(app);
 
 app.use('/api',routes);
 
