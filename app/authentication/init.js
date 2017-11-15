@@ -48,16 +48,14 @@ passport.use(new SteamStrategy({
     realm: 'http://localhost:3000/',
     apiKey: STEAM_API_KEY
   },(identifier, profile, done) => {
-    console.log('steam request!',identifier,profile)
     getUserByOpenId(identifier)
     .then(user => {
         // User not found
         if (user) {
             return done(null, user)
         }
-        
+
         //TODO: create user
-        console.log(`can't find user yall!`)
         return done(null, false, {message: 'User does not exist'});
         })
     .catch(err => done(err))
