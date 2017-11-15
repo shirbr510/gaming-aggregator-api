@@ -4,6 +4,7 @@ import * as firebase from 'firebase'
 import * as _ from 'lodash';
 import bcrypt from "bcrypt";
 import { linkPlatform } from '../controllers/auth';
+import * as usersToUserPlatforms from './usersToUserPlatforms';
 
 const saltRounds = 10;
 const COLLECTION_BASE_ROUTE = '/users';
@@ -25,12 +26,13 @@ export async function createUser(username, email, password) {
     throw 'failed to push user';
 }
 
-export function getUsers() {
-    return database.ref(COLLECTION_BASE_ROUTE).once('value').then(snapshot=>snapshot.val());
+export async function getUsers() {
+    return await database.ref(COLLECTION_BASE_ROUTE).once('value').then(snapshot=>snapshot.val());
 }
 
-export function getUser(userId: string) {
-    return database.ref(`${COLLECTION_BASE_ROUTE}/${userId}`).once('value').then(snapshot=>snapshot.val());
+export async function getUser(userId: string) {
+    const user = await database.ref(`${COLLECTION_BASE_ROUTE}/${userId}`).once('value').then(snapshot=>snapshot.val());
+    return Object.assign({},user,{id:userId});
 }
 
 export async function getUserByEmail(email: string) {
@@ -40,15 +42,11 @@ export async function getUserByEmail(email: string) {
     return usersArray.length > 0 ? _.first(usersArray) : {};
 }
 
-export async function getUserByOpenId(openId: string) {
-    const usersPlatforms = database.ref(`${COLLECTION_BASE_ROUTE}`).child("platforms").once('value').then(snapshot => snapshot.val());
-    const matchingUser=_.find(usersPlatforms,userPlatforms=>{
-        return _.chain(Object.keys(userPlatforms)).map(key=>userPlatforms[key]).find(platformValue=>platformValue.id===openId).value();
-    })
-    return matchingUser;
-}
-
-export async function linkPlatformToUser(userId: string, platformName: string, data: object) {
-        await database.ref(`${COLLECTION_BASE_ROUTE}/${userId}/platforms/${platformName}`).set(data);
-        return await getUser(userId);
+export async function getUserByPlatformId(platformId: string) {
+    const userToPlatformUser = await usersToUserPlatforms.getByPlatformId(platformId);
+    if(!userToPlatformUser){
+        return undefined;
     }
+    const user = await getUser(userToPlatformUser.userId);
+    return user;
+}

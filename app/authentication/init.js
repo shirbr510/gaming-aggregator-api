@@ -1,6 +1,6 @@
 // @flow
 
-import {getUserByEmail, getUserByOpenId} from "../database/users";
+import {getUserByEmail, getUserByPlatformId} from "../database/users";
 
 const passport = require('passport');
 const bcrypt = require('bcrypt');
@@ -48,7 +48,7 @@ passport.use(new SteamStrategy({
     realm: 'http://localhost:3000/',
     apiKey: STEAM_API_KEY
   },(identifier, profile, done) => {
-    getUserByOpenId(identifier)
+    getUserByPlatformId(identifier)
     .then(user => {
         // User not found
         if (user) {
