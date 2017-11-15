@@ -3,7 +3,7 @@
 import * as users from "../database/users";
 
 export const getAllUsers=(request, response) => {
-    users.get().then(users => {
+    users.getUsers().then(users => {
         response.send(users);
     });
 };

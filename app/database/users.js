@@ -22,7 +22,7 @@ export function createUser(username, email, password) {
     });
 }
 
-export function get() {
+export function getUsers() {
     return database.ref(COLLECTION_BASE_ROUTE).once('value').then(snapshot=>snapshot.val());
 }
 
@@ -36,3 +36,16 @@ export async function getUserByEmail(email: string) {
     const usersArray = _.map(Object.keys(users), key => users[key]);
     return usersArray.length > 0 ? _.first(usersArray) : {};
 }
+
+export async function getUserByOpenId(openId: string) {
+
+    const usersPlatforms = database.ref(`${COLLECTION_BASE_ROUTE}`).child("platforms").once('value').then(snapshot => snapshot.val());
+    const matchingUser=_.find(usersPlatforms,userPlatforms=>{
+        return _.chain(Object.keys(userPlatforms)).map(key=>userPlatforms[key]).find(platformValue=>platformValue.id===openId).value();
+    })
+    return matchingUser;
+}
+
+export async function linkPlatformToUser(userId: string, platformName: string, data: object) {
+        return database.ref(`${COLLECTION_BASE_ROUTE}/${userId}/platforms/${platformName}`).set(data);
+    }
