@@ -2,7 +2,8 @@
 
 import passport from "passport";
 import { serializeOpenId } from "../serializers/steamAuthenticationSerializer";
-import {getUsers, linkPlatformToUser, getUser} from '../database/users'
+import {getUsers, linkPlatformToUser, getUser, getUserByOpenId,createUser} from '../database/users'
+import { platform } from "os";
 
 export const localAuth=passport.authenticate('local');
 
@@ -13,13 +14,26 @@ export const localAuthCallback=(request, response) => {
 
 export const steamAuth=passport.authenticate('steam');
 
-export const steamAuthCallback=async (request, response) => {
+export const linkPlatform=async (request, response) => {
+    const {userId, platform, id,sig} = request.body;
+    const openIdData = {userId,id,sig};
+    let user = userId?
+        await getUser(userId):
+        await getUserByOpenId(id);
+    if(!user){
+        const newUserId = await createUser(`${platform}${id}`,null,sig);
+        user={id:newUserId};
+    }
+    console.log(`user after everything`,user)
+    const updatedUser = await linkPlatformToUser(user.id,platform,openIdData);
+    response.send(updatedUser);
+}
+
+export const steamAuthCallback=(request, response) => {
     const {query} = request;
-    const openIdData = serializeOpenId(query);
-    const users = await getUsers();
-    const userId=Object.keys(users)[0];
-    await linkPlatformToUser(userId,'steam',openIdData);
-    const user = await getUser(userId);
-    response.send(user);
+    const parsedQuery=serializeOpenId(query)
+    const openIdData = Object.assign({},parsedQuery,{platform:'steam'});
+    request.body=openIdData;
+    return linkPlatform(request, response)
 };
 

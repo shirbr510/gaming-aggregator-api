@@ -3,30 +3,33 @@
 import * as firebase from 'firebase'
 import * as _ from 'lodash';
 import bcrypt from "bcrypt";
+import { linkPlatform } from '../controllers/auth';
 
 const saltRounds = 10;
 const COLLECTION_BASE_ROUTE = '/users';
 
 const database = firebase.database();
 
-export function createUser(username, email, password) {
-    return bcrypt.genSalt(saltRounds).then(salt => {
-        bcrypt.hash(password, salt).then(passwordHash => {
-            const user = {
-                username,
-                email,
-                password: passwordHash
-            };
-            database.ref(COLLECTION_BASE_ROUTE).push(user);
-        })
-    });
+export async function createUser(username, email, password) {
+    const salt = await bcrypt.genSalt(saltRounds);
+    const passwordHash = await bcrypt.hash(password, salt);
+    const user = {
+        username,
+        email,
+        password: passwordHash
+    };
+    const userRef = database.ref(COLLECTION_BASE_ROUTE).push(user);
+    if(userRef){
+        return userRef.key
+    }
+    throw 'failed to push user';
 }
 
 export function getUsers() {
     return database.ref(COLLECTION_BASE_ROUTE).once('value').then(snapshot=>snapshot.val());
 }
 
-export function getUser(userId) {
+export function getUser(userId: string) {
     return database.ref(`${COLLECTION_BASE_ROUTE}/${userId}`).once('value').then(snapshot=>snapshot.val());
 }
 
@@ -38,7 +41,6 @@ export async function getUserByEmail(email: string) {
 }
 
 export async function getUserByOpenId(openId: string) {
-
     const usersPlatforms = database.ref(`${COLLECTION_BASE_ROUTE}`).child("platforms").once('value').then(snapshot => snapshot.val());
     const matchingUser=_.find(usersPlatforms,userPlatforms=>{
         return _.chain(Object.keys(userPlatforms)).map(key=>userPlatforms[key]).find(platformValue=>platformValue.id===openId).value();
@@ -47,5 +49,6 @@ export async function getUserByOpenId(openId: string) {
 }
 
 export async function linkPlatformToUser(userId: string, platformName: string, data: object) {
-        return database.ref(`${COLLECTION_BASE_ROUTE}/${userId}/platforms/${platformName}`).set(data);
+        await database.ref(`${COLLECTION_BASE_ROUTE}/${userId}/platforms/${platformName}`).set(data);
+        return await getUser(userId);
     }
