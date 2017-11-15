@@ -25,7 +25,7 @@ const enrichUser = async user =>{
     }
 }
 
-const enrichUsers= (users: Array<object>)=>Promise.all(_.map(users,enrichUser));
+const enrichUsers= (users)=>Promise.all(_.map(users,enrichUser));
 
 export async function createUser(username, email, password) {
     const salt = await bcrypt.genSalt(saltRounds);
@@ -52,15 +52,18 @@ export async function getUsers() {
 }
 
 export async function getUser(userId: string) {
-    const user = await database.ref(`${COLLECTION_BASE_ROUTE}/${userId}`).once('value').then(snapshot=>snapshot.val());
-    return await enrichUser(Object.assign({},user,{id:userId}));
+    const user = await database.ref(`${COLLECTION_BASE_ROUTE}/${userId}`).once('value').then(snapshot => Object.assign({id:snapshot.key},snapshot.val()));
+    return await enrichUser(user);
 }
 
 export async function getUserByEmail(email: string) {
     const userswithSpecificEmailRef = database.ref(`${COLLECTION_BASE_ROUTE}`).orderByChild("email").equalTo(email).limitToFirst(1);
-    const users = await userswithSpecificEmailRef.once('value').then(snapshot => snapshot.val());
-    const usersArray = _.map(Object.keys(users), key => users[key]);
-    return usersArray.length > 0 ? _.first(usersArray) : {};
+    const users = await userswithSpecificEmailRef.once('value').then(snapshot => Object.assign({id:snapshot.key},snapshot.val()))
+    const user = users.length>0? _.first(users):undefined;
+    if(user){
+        return await enrichUser(user);
+    }
+    return undefined;
 }
 
 export async function getUserByPlatformId(platformId: string) {
