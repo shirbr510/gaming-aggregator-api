@@ -27,16 +27,16 @@ export function getUserToPlatform(userToPlatformId: string) {
 }
 
 export async function getByUserId(userId: string) {
-    const userswithSpecificEmailRef = database.ref(`${COLLECTION_BASE_ROUTE}`).orderByChild("userId").equalTo(userId);
-    const users = await userswithSpecificEmailRef.once('value').then(snapshot => snapshot.val());
-    const usersArray = _.map(Object.keys(users), key => users[key]);
-    if(usersArray.length>0){
-        return _.reduce((result,userToPlatform)=>{
+    const userToPLatformsWithSpecificUserId = database.ref(`${COLLECTION_BASE_ROUTE}`).orderByChild("userId").equalTo(userId);
+    const usersToPlatforms = await userToPLatformsWithSpecificUserId.once('value').then(snapshot => snapshot.val());
+    const usersToPlatformsArray = _.map(Object.keys(usersToPlatforms), key => usersToPlatforms[key]);
+    if(usersToPlatformsArray.length>0){
+        return _.reduce(usersToPlatformsArray,(result,userToPlatform)=>{
             result[userToPlatform.platformName]=userToPlatform;
             return result;
         }, {});
     }
-    return [];
+    return undefined;
 }
 
 export async function getByPlatformId(platformId: string) {

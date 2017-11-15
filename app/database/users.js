@@ -11,6 +11,22 @@ const COLLECTION_BASE_ROUTE = '/users';
 
 const database = firebase.database();
 
+const enrichUser = async user =>{
+    try{
+        const {id} = user;
+        const platforms = await usersToUserPlatforms.getByUserId(id);
+        if(platforms){
+            return Object.assign({},user,{platforms});
+        }
+        return user
+    }
+    catch(err){
+        return user;
+    }
+}
+
+const enrichUsers= (users: Array<object>)=>Promise.all(_.map(users,enrichUser));
+
 export async function createUser(username, email, password) {
     const salt = await bcrypt.genSalt(saltRounds);
     const passwordHash = await bcrypt.hash(password, salt);
@@ -27,12 +43,17 @@ export async function createUser(username, email, password) {
 }
 
 export async function getUsers() {
-    return await database.ref(COLLECTION_BASE_ROUTE).once('value').then(snapshot=>snapshot.val());
+    const users= await database.ref(COLLECTION_BASE_ROUTE).once('value').then(snapshot=>snapshot.val());
+    const usersArray = _.map(Object.keys(users), key => {
+        const user =Object.assign({},users[key],{id:key});
+        return user;
+    });
+    return await enrichUsers(usersArray);
 }
 
 export async function getUser(userId: string) {
     const user = await database.ref(`${COLLECTION_BASE_ROUTE}/${userId}`).once('value').then(snapshot=>snapshot.val());
-    return Object.assign({},user,{id:userId});
+    return await enrichUser(Object.assign({},user,{id:userId}));
 }
 
 export async function getUserByEmail(email: string) {
@@ -43,10 +64,13 @@ export async function getUserByEmail(email: string) {
 }
 
 export async function getUserByPlatformId(platformId: string) {
-    const userToPlatformUser = await usersToUserPlatforms.getByPlatformId(platformId);
-    if(!userToPlatformUser){
+    try{
+        const userToPlatformUser = await usersToUserPlatforms.getByPlatformId(platformId);
+        return userToPlatformUser?
+            await getUser(userToPlatformUser.userId):
+            undefined;
+    }
+    catch(err){
         return undefined;
     }
-    const user = await getUser(userToPlatformUser.userId);
-    return user;
 }
