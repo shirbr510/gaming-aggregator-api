@@ -16,21 +16,22 @@ export const localAuthCallback=(request, response) => {
 export const steamAuth=passport.authenticate('steam');
 
 export const linkPlatform=async (request, response) => {
-    const {platform, id,sig} = request.body;
-    let {userId} = request.body;
-    const openIdData = {id,sig};
+    const {userId,platform, id,sig} = request.body;
+    const createUserFlow = async()=>{
+        const newUserId = await createUser(`${platform}${id}`,null,sig);
+        await usersToUserPlatforms.create(newUserId,platform,id);
+        return await getUser(newUserId);
+    }
+    let user;
     if(!userId){
-        let user = await getUserByPlatformId(id);
-        if(user){
-            userId=user.id;
-        }
-        else{
-            const newUserId = await createUser(`${platform}${id}`,null,sig);
-            userId=newUserId
+        user = await getUserByPlatformId(id);
+        if(!user){
+            user = await createUserFlow();
         }
     }
-    await usersToUserPlatforms.create(userId,platform,id);
-    const user = await getUser(userId);
+    else{
+        user = await createUserFlow();
+    }
     response.send(user);
 }
 
