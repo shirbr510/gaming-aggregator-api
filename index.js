@@ -8,6 +8,7 @@ import errorHandler from "./app/middlewares/errorHandler";
 import "./app/init";
 import {usePassportMiddleware} from './app/authentication/middleware';
 import routes from './app/routes';
+import * as scheduler from './app/scheduler';
 
 
 app.use(cookieParser());
@@ -26,3 +27,5 @@ app.listen(port, (err) => {
 
     console.log(`server is listening on ${port}`)
 });
+
+scheduler.startAll();
