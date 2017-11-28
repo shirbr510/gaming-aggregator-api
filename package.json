@@ -23,7 +23,6 @@
   },
   "homepage": "https://github.com/shirbr510/gaming-aggregator-api#readme",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
     "babel-eslint": "^8.0.1",
     "babel-preset-env": "^1.6.1",
     "babel-preset-flow": "^6.23.0",
@@ -53,6 +52,7 @@
   },
   "dependencies": {
     "axios": "^0.17.1",
+    "babel-cli": "^6.26.0",
     "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "cookie-parser": "^1.4.3",
